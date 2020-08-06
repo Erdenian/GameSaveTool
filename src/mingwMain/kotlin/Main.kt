@@ -1,4 +1,3 @@
-import kotlinx.cinterop.convert
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.toKString
 import platform.posix.closedir
@@ -8,6 +7,7 @@ import platform.windows.MB_ICONQUESTION
 import platform.windows.MB_OK
 import platform.windows.MessageBoxW
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun main() {
     val supportedExtensions = listOf(".gsba", ".rar", ".zip")
 
@@ -19,12 +19,11 @@ fun main() {
         }.groupingBy { it }
         .eachCount()
         .filter { it.value > 1 }
-        .map { (name, count) ->
-            "$name ($count times)"
-        }
+        .map { (name, count) -> "$name ($count times)" }
+        .takeIf { it.isNotEmpty() }
     MessageBoxW(
-        null, dublicates.takeIf { it.isNotEmpty() }?.joinToString("\n") ?: "No dublicates",
-        "Dublicates", (MB_OK or MB_ICONQUESTION).convert()
+        null, dublicates?.joinToString("\n") ?: "No dublicates",
+        "Dublicates", (MB_OK or MB_ICONQUESTION).toUInt()
     )
 }
 
